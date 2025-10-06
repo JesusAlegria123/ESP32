@@ -1,0 +1,45 @@
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEScan.h>
+#include <BLEAdvertisedDevice.h>
+
+int scanTime = 5; // Tiempo de escaneo en segundos
+BLEScan* pBLEScan;
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("Iniciando escaneo BLE...");
+
+  // Inicializar BLE
+  BLEDevice::init("");
+
+  // Obtener el objeto de escaneo
+  pBLEScan = BLEDevice::getScan(); 
+  pBLEScan->setActiveScan(true); // true para escaneo activo
+}
+
+void loop() {
+  Serial.println("\nEscaneando dispositivos...");
+  // Ahora start() devuelve un puntero
+  BLEScanResults* foundDevices = pBLEScan->start(scanTime, false);
+
+  Serial.print("Dispositivos encontrados: ");
+  Serial.println(foundDevices->getCount());
+
+  // Recorrer los dispositivos detectados
+  for (int i = 0; i < foundDevices->getCount(); i++) {
+    BLEAdvertisedDevice device = foundDevices->getDevice(i);
+    Serial.print("Dispositivo ");
+    Serial.print(i + 1);
+    Serial.print(": ");
+    Serial.print(device.getAddress().toString().c_str()); // dirección MAC
+    Serial.print(" | RSSI: ");
+    Serial.println(device.getRSSI()); // potencia de señal
+  }
+
+  // Limpiar resultados para la siguiente búsqueda
+  pBLEScan->clearResults();
+
+  // Esperar un poco antes de volver a escanear
+  delay(2000);
+}
