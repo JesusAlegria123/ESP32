@@ -1,0 +1,16 @@
+#include <WiFi.h>
+#include <WebServer.h>
+const char* ssid="TECNO CAMON 30S Pro"; const char* pass="123456789";
+WebServer server(80);
+
+void handleRoot(){ server.send(200, "text/plain", "Hola desde ESP32, Este es mi nombre : Jesus Augusto Alegria Mendoza, Codigo : 215780, DNI: 76049994"); }
+
+void setup(){
+  Serial.begin(115200);
+  WiFi.begin(ssid, pass);
+  while (WiFi.status()!=WL_CONNECTED){ delay(500); Serial.print("."); }
+  Serial.println("\nIP: " + WiFi.localIP().toString());
+  server.on("/", handleRoot);
+  server.begin();
+}
+void loop(){ server.handleClient(); }
